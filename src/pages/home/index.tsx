@@ -1,79 +1,50 @@
 import { useDispatch, useSelector } from "react-redux";
-import { selectBooks, Book, fetchBooks, borrowBook } from "../../models/book";
 import {
-  Box,
-  Button,
   Paper,
-  Tab,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
 } from "@mui/material";
 import { useEffect } from "react";
 import { AnyAction } from "@reduxjs/toolkit";
-import { selectUser } from "../../models/user";
+import { fetchUsers, selectUsers } from "../../models/user";
 
-function BooksTable({ books }: { books: Book[] }) {
-  const user = useSelector(selectUser);
+function UserTable() {
+  const users = useSelector(selectUsers);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchUsers() as unknown as AnyAction);
+  }, []);
+
   return (
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="books table">
+      <Table sx={{ minWidth: 650 }} aria-label="users table">
         <TableHead>
           <TableRow>
             <TableCell>Sr No.</TableCell>
-            <TableCell>Book</TableCell>
-            <TableCell>Category</TableCell>
-            <TableCell>
-              Actions {user.id == "" ? "(login to enable)" : ""}
-            </TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell>Email</TableCell>
+            <TableCell>Books</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {books.map((book, index) => (
-            <TableRow key={book.id}>
+          {users.map((user, index) => (
+            <TableRow key={user.id}>
               <TableCell>{index + 1}</TableCell>
-              <TableCell>{book.title}</TableCell>
-              <TableCell>{book.category}</TableCell>
+              <TableCell>{user.name}</TableCell>
+              <TableCell>{user.email}</TableCell>
               <TableCell>
-                {book.borrowed ? (
-                  book.borrower == user.id ? (
-                    <Button
-                      variant="contained"
-                      color="error"
-                      onClick={() => {
-                        dispatch(
-                          borrowBook({
-                            id: book.id,
-                            return_book: true,
-                          }) as unknown as AnyAction
-                        );
-                      }}
-                    >
-                      Return
-                    </Button>
-                  ) : (
-                    <Button variant="contained" disabled>
-                      Borrowed
-                    </Button>
-                  )
-                ) : (
-                  <Button
-                    variant="contained"
-                    color="success"
-                    disabled={user.id == ""}
-                    onClick={() => {
-                      dispatch(
-                        borrowBook({ id: book.id }) as unknown as AnyAction
-                      );
-                    }}
-                  >
-                    Borrow
-                  </Button>
-                )}
+                {user.books.map((book) => (
+                  <>
+                    {index !== 0 ? <br></br> : null}
+                    <p key={book.id}>{book.title}</p>
+                  </>
+                ))}
               </TableCell>
             </TableRow>
           ))}
@@ -84,22 +55,5 @@ function BooksTable({ books }: { books: Book[] }) {
 }
 
 export default function Home() {
-  const books = useSelector(selectBooks);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (books.length === 0) {
-      dispatch(fetchBooks() as unknown as AnyAction);
-    }
-  }, []);
-
-  useEffect(() => {
-    console.log(books);
-  }, [books]);
-
-  return (
-    <div>
-      <BooksTable books={books} />
-    </div>
-  );
+  return <UserTable />;
 }

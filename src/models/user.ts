@@ -1,5 +1,6 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Book } from "./book";
+import { RootState } from "../app/store";
 
 export type User = {
   id: string;
@@ -97,8 +98,42 @@ const userSlice = createSlice({
   },
 });
 
+export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
+  const response = await fetch(`http://localhost:8000/api/users`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  const data = await response.json();
+  if (response.status === 200) {
+    return data;
+  } else {
+    throw new Error(data.message);
+  }
+});
+
+export const usersSlice = createSlice({
+  name: "users",
+  initialState: [] as User[],
+  reducers: {},
+  extraReducers: (builder) => {
+    builder.addCase(fetchUsers.fulfilled, (_, action) => {
+      return action.payload;
+    });
+    builder.addCase(fetchUsers.rejected, (_, action) => {
+      console.error("fetchUsers/rejected");
+      console.error(action.error);
+    });
+  },
+});
+
 export const { setUser, clearUser } = userSlice.actions;
 
-export default userSlice.reducer;
+export const userReducer = userSlice.reducer;
 
-export const selectUser = (state: any) => state.user;
+export const usersReducer = usersSlice.reducer;
+
+export const selectUser = (state: RootState) => state.user;
+
+export const selectUsers = (state: RootState) => state.users;

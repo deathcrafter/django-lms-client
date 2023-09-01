@@ -1,4 +1,4 @@
-import { useNavigate, useRoutes } from "react-router-dom";
+import { NavLink, useNavigate, useRoutes } from "react-router-dom";
 import Auth from "./pages/auth";
 import Login from "./pages/auth/login";
 import Register from "./pages/auth/register";
@@ -9,6 +9,7 @@ import { clearUser, fetchUser, selectUser } from "./models/user";
 import Home from "./pages/home";
 import { useEffect } from "react";
 import { AnyAction } from "@reduxjs/toolkit";
+import Books from "./pages/books";
 
 function Navigation() {
   const user = useSelector(selectUser);
@@ -30,19 +31,62 @@ function Navigation() {
       <Box
         sx={{
           display: "flex",
-          gap: "1rem",
+          gap: "2rem",
           alignItems: "center",
           p: 1,
           cursor: "pointer",
         }}
-        onClick={() => {
-          navigate("/");
-        }}
       >
-        <Box>
-          <AutoStories fontSize="medium" />
+        <NavLink
+          to="/"
+          style={{
+            textDecoration: "none",
+            color: "inherit",
+            display: "flex",
+            gap: "1rem",
+            alignItems: "center",
+          }}
+        >
+          <Box>
+            <AutoStories fontSize="medium" />
+          </Box>
+          <Typography variant="h6">Auctopus Library</Typography>
+        </NavLink>
+        <Box
+          sx={{
+            display: "flex",
+            gap: "1rem",
+            alignItems: "center",
+          }}
+        >
+          <NavLink
+            to="/"
+            style={{
+              textDecoration: "none",
+              color: "inherit",
+            }}
+            end
+          >
+            {({ isActive }) => (
+              <Typography variant="h6" color={isActive ? "primary" : "inherit"}>
+                Home
+              </Typography>
+            )}
+          </NavLink>
+          <NavLink
+            to="/books"
+            style={{
+              textDecoration: "none",
+              color: "inherit",
+            }}
+          >
+            {({ isActive }) => (
+              <Typography variant="h6" color={isActive ? "primary" : "inherit"}>
+                Books
+              </Typography>
+            )}
+          </NavLink>
         </Box>
-        <Typography variant="h6">Auctopus Library</Typography>
       </Box>
       <Box
         sx={{
@@ -87,6 +131,10 @@ function App() {
     {
       path: "",
       element: <Home />,
+    },
+    {
+      path: "books",
+      element: <Books />,
     },
     {
       path: "auth",

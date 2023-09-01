@@ -85,4 +85,4 @@ const booksSlice = createSlice({
 
 export default booksSlice.reducer;
 
-export const selectBooks = (state: { books: Book[] }) => state.books;
+export const selectBooks = (state: RootState) => state.books;
